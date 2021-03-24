@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper</title>
+    <link rel="stylesheet" href="/Day13-Sprint1/Delivery/1st DELIVERY - Wednesday 2030/css/main.css">
+</head>
+
+<body onload="initGame()">
+
+    <h1>Minesweeper v1.0</h1>
+
+    <div class="game-area">
+
+
+        <div onclick="reSet()" class="smiley"> </div>
+
+        <div class="board-container">
+
+            <table> </table>
+
+        </div>
+
+        <div class="lives-count">lives: <span></span></div>
+
+        <div class="btn-area">
+            <button id="4" onclick="changeLevel(this)" class="btn beginner "> Beginner </button>
+            <button id="8" onclick="changeLevel(this)" class="btn pro "> Pro </button>
+            <button id="12" onclick="changeLevel(this)" class="btn master"> Master </button>
+        </div>
+
+    </div>
+
+
+    <script src="/Day13-Sprint1/Delivery/1st DELIVERY - Wednesday 2030/js/util.js"></script>
+    <script src="/Day13-Sprint1/Delivery/1st DELIVERY - Wednesday 2030/js/game.js"></script>
+</body>
+
+</html>
