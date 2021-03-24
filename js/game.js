@@ -15,9 +15,9 @@ var gLevel = {
     MINES: 2
 };
 
-var playImg = `<img src="./img/play.png"></img>`
-var victoryImg = `<img src="./img/victory.png"></img>`
-var gameOverImg = `<img src="./img/game-over.png"></img>`
+var playImg = `<img src="img/play.png"></img>`
+var victoryImg = `<img src="img/victory.png"></img>`
+var gameOverImg = `<img src="img/game-over.png"></img>`
 
 var mineImg = '💣'
 var flagImg = '🏁'
@@ -298,7 +298,6 @@ function reSet() {
 
     initGame()
 }
-
 
 function changeLevel(elBtn) {
     var level = +elBtn.id
