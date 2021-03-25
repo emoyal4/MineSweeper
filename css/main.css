@@ -1,23 +1,13 @@
-@font-face {
-    font-family: myfont;
-    src: url("fonts/another_danger.otf");
-}
-
-@font-face {
-    font-family: myfont2;
-    src: url("fonts/another_danger_slanted.otf");
-}
-
 body {
-    background-image: url("img/back.jpg");
-    background-size: 100%;
+    background-image: url("https://cdn.dribbble.com/users/1431620/screenshots/14549628/media/b4737654105e662c80dafa616f5b9932.jpg");
+    background-size:cover;
     text-align: center;
     background-repeat: no-repeat;
 }
 
 h1 {
     text-align: center;
-    font-family: myfont;
+    font-family: 'Creepster', cursive;
     color: black;
     letter-spacing: 8px;
     margin-bottom: 0px;
@@ -110,7 +100,7 @@ table {
 }
 
 button {
-    font-family: myfont2;
+    font-family: 'Creepster', cursive;
     letter-spacing: 3px;
     font-size: 80%;
     color: #000000;
@@ -125,8 +115,12 @@ button:hover {
 
 .info {
     text-align: center;
-    font-family: fantasy;
+    font-family: 'Creepster', cursive;
     padding: 5px;
     margin: 0px;
     color: black;
+}
+
+.time{
+    font-family: 'Creepster', cursive;
 }
