@@ -6,30 +6,38 @@ var gGame = {
     isOn: false,
     shownCount: 0,
     markedCount: 0,
-    secsPassed: 0,
-    lives: 3
+    secsPassed: 0
 }
 
 var gLevel = {
     SIZE: 4,
-    MINES: 2
+    MINES: 2,
+    lives: 3
 };
 
-var playImg = `<img src="img/play.png"></img>`
-var victoryImg = `<img src="img/victory.png"></img>`
-var gameOverImg = `<img src="img/game-over.png"></img>`
+var elPlayImg = document.querySelector('.play')
+var elVictoryImg = document.querySelector('.victory')
+var elGameOverImg = document.querySelector('.game-over')
 
 var mineImg = '💣'
 var flagImg = '🏁'
 
 var isFirstClick = true
-var gCurrImg = playImg
-
+var isHint = false
+var elCurrHintBtn
+var hintPosissions = []
 
 
 function initGame() {
 
     gGame.isOn = true
+
+    var elMinutes = document.querySelector('.min')
+    elMinutes.innerText = 0
+    var elSeconds = document.querySelector('.sec')
+    elSeconds.innerText = 0
+
+    clearInterval(gGameInterval)
 
     gBoard = buildBoard(gLevel.SIZE)
 
@@ -38,13 +46,9 @@ function initGame() {
 }
 
 function buildBoard(size) {
-
     var board = createMat(size)
-
     for (var i = 0; i < board.length; i++) {
-
         for (var j = 0; j < board[i].length; j++) {
-
             var cell = {
                 minesAroundCount: 0,
                 isMine: false,
@@ -58,38 +62,25 @@ function buildBoard(size) {
 }
 
 function placeMine(board, pos) {
-
     var poss = []
-
     for (var i = 0; i < board.length; i++) {
-
         for (var j = 0; j < board[i].length; j++) {
-
             if (i === pos.i && j === pos.j || board[i][j].isMine) continue
-
             poss.push({ i: i, j: j })
         }
     }
 
     var posIdx = getRandomIntInclusive(0, poss.length - 1)
-
     var pos = poss[posIdx]
-
     var currCell = board[pos.i][pos.j]
-
     currCell.isMine = true
 }
 
 function setBoardMinesNegsCount(board) {
-
     for (var i = 0; i < board.length; i++) {
-
         for (var j = 0; j < board[i].length; j++) {
-
             var currCell = board[i][j]
-
             var currPos = { i: i, j: j }
-
             currCell.minesAroundCount = setCellMinesNegsCount(board, currPos)
         }
     }
@@ -97,19 +88,13 @@ function setBoardMinesNegsCount(board) {
 }
 
 function setCellMinesNegsCount(board, pos) {
-
     var mineCount = 0
-
     for (var i = pos.i - 1; i <= pos.i + 1; i++) {
-
         if (i < 0 || i >= board.length) continue
 
         for (var j = pos.j - 1; j <= pos.j + 1; j++) {
-
             if (j < 0 || j >= board[i].length) continue
-
             if (i === pos.i && j === pos.j) continue
-
             if (board[i][j].isMine) mineCount++
         }
     }
@@ -117,23 +102,17 @@ function setCellMinesNegsCount(board, pos) {
 }
 
 function renderBoard(board) {
-
     if (!gGame.isOn) return
 
     var strHTML = '<tbody>';
 
     for (var i = 0; i < board.length; i++) {
-
         strHTML += '<tr>';
 
         for (var j = 0; j < board[0].length; j++) {
-
             var cell = board[i][j]
-
             var className = `cell`
-
             var cellId = ''
-
             var cellImg = ''
 
             if (cell.minesAroundCount) {
@@ -151,30 +130,39 @@ function renderBoard(board) {
                 className += ` isMarked`
             }
 
-            className += (cell.isShown) ? ` show` : ` hide`
-
+            className += (cell.isShown || cell.isMarked) ? ` show` : ` hide`
             cellId = `${i}-${j}`
-
             strHTML += `<td id="${cellId}" onmousedown="mouseClick(event , this)" class="${className}"><div>${cellImg}</div></td>`
         }
-
         strHTML += '</tr>'
     }
-
     strHTML += '</tbody>'
 
     var elContainer = document.querySelector("table")
     elContainer.innerHTML = strHTML
 
-    var elSmiley = document.querySelector(".smiley")
-    elSmiley.innerHTML = `${gCurrImg}`
-
     var elLivesCounter = document.querySelector(".lives-count span")
-    elLivesCounter.innerText = gGame.lives
+    elLivesCounter.innerText = gLevel.lives
+
+    var elLivesCounter = document.querySelector(".mine-count span")
+    elLivesCounter.innerText = gLevel.MINES - gGame.markedCount
 
 }
 
 function showCell(elCell) {
+
+    if (isHint) {
+        showHint(elCell)
+        setTimeout(function () {
+            for (var i = 0; i < hintPosissions.length; i++) {
+                var cellPos = hintPosissions[i]
+                gBoard[cellPos.i][cellPos.j].isShown = false
+            }
+            elCurrHintBtn.hidden = true
+            renderBoard(gBoard)
+        }, 1000);
+        return
+    }
 
     if (!elCell.classList.contains('hide')) return
     if (elCell.classList.contains('isMarked')) return
@@ -183,6 +171,9 @@ function showCell(elCell) {
     var cell = gBoard[cellPos.i][cellPos.j]
 
     if (isFirstClick) {
+
+        timer()
+
         for (var i = 0; i < gLevel.MINES; i++) {
             placeMine(gBoard, cellPos)
         }
@@ -190,18 +181,21 @@ function showCell(elCell) {
         isFirstClick = false
     }
 
-    if (!cell.minesAroundCount) {
-        expandShown(gBoard, cellPos)
-    }
+    if (!cell.minesAroundCount) expandShown(gBoard, cellPos)
+    if (!cell.isMine) gGame.shownCount++
 
     cell.isShown = true
-    gGame.shownCount++
 
     renderBoard(gBoard)
     checkGameOver(cell)
+    checkVictory(gBoard)
 }
 
 function markCell(elCell) {
+
+    if (isHint) return
+
+    if (gGame.markedCount >= gLevel.MINES && !elCell.classList.contains('isMarked')) return
 
     window.oncontextmenu = function () { return false }
 
@@ -209,13 +203,10 @@ function markCell(elCell) {
     var cell = gBoard[cellPos.i][cellPos.j]
 
     if (elCell.classList.contains('isMarked')) {
-
         cell.isMarked = false
         gGame.markedCount--
 
     } else {
-
-
         cell.isMarked = true
         gGame.markedCount++
     }
@@ -225,15 +216,11 @@ function markCell(elCell) {
 }
 
 function expandShown(board, pos) {
-
     for (var i = pos.i - 1; i <= pos.i + 1; i++) {
-
         if (i < 0 || i >= board.length) continue
 
         for (var j = pos.j - 1; j <= pos.j + 1; j++) {
-
             if (j < 0 || j >= board[i].length) continue
-
             if (i === pos.i && j === pos.j) continue
 
             var cell = board[i][j]
@@ -244,26 +231,29 @@ function expandShown(board, pos) {
             }
         }
     }
-
 }
 
 function checkGameOver(cell) {
 
+    if (!gGame.isOn) return
+
     if (cell.isMine && !cell.isMarked) {
-        gGame.lives--
+        gLevel.lives--
         gGame.shownCount++
     }
 
-    if (gGame.lives === 0) {
-
+    if (gLevel.lives === 0) {
         var elMineCells = document.querySelectorAll(".isMine")
 
         for (var i = 0; i < elMineCells.length; i++) {
             elMineCells[i].classList.remove('hide')
         }
 
-        console.log('Game Over');
-        gCurrImg = gameOverImg
+        console.log(timePass);
+        clearInterval(gGameInterval)
+        elPlayImg.hidden = true
+        elGameOverImg.hidden = false
+
         renderBoard(gBoard)
         gGame.isOn = false
         return
@@ -274,9 +264,14 @@ function checkGameOver(cell) {
 
 function checkVictory(board) {
 
+    if (!gGame.isOn) return
+
     if (gGame.shownCount >= (gLevel.SIZE ** 2) - gLevel.MINES) {
-        console.log('Victory');
-        gCurrImg = victoryImg
+
+        clearInterval(gGameInterval)
+
+        elPlayImg.hidden = true
+        elVictoryImg.hidden = false
         renderBoard(board)
         gGame.isOn = false
         return
@@ -290,11 +285,22 @@ function reSet() {
         shownCount: 0,
         markedCount: 0,
         secsPassed: 0,
-        lives: 3
     }
 
     isFirstClick = true
-    gCurrImg = playImg
+    elPlayImg.hidden = false
+    elVictoryImg.hidden = true
+    elGameOverImg.hidden = true
+
+    isHint = false
+
+    var elHints = document.querySelectorAll('.hint')
+    for (var i = 0; i < elHints.length; i++) {
+        elHints[i].classList.remove('click')
+        elHints[i].hidden = false
+    }
+
+    gLevel.lives = 3
 
     initGame()
 }
@@ -320,4 +326,38 @@ function changeLevel(elBtn) {
             break;
     }
     reSet()
+}
+
+function getHint(elBtn) {
+    if (isFirstClick) return
+    isHint = true
+    elBtn.classList.add('click')
+    elCurrHintBtn = elBtn
+}
+
+function showHint(elCell) {
+
+    var pos = getCellPos(elCell.id)
+
+    var cell = gBoard[pos.i][pos.j]
+
+    hintPosissions = []
+
+    for (var i = pos.i - 1; i <= pos.i + 1; i++) {
+        if (i < 0 || i >= gBoard.length) continue
+
+        for (var j = pos.j - 1; j <= pos.j + 1; j++) {
+            if (j < 0 || j >= gBoard[i].length) continue
+
+            if (gBoard[i][j].isShown) continue
+
+            var cell = gBoard[i][j]
+            var cellPos = { i: i, j: j }
+            hintPosissions.push(cellPos)
+            cell.isShown = true
+        }
+    }
+    renderBoard(gBoard)
+
+    isHint = false
 }

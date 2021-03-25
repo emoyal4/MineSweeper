@@ -1,5 +1,10 @@
 'use strict'
 
+var gGameInterval
+var startTime
+var timePass
+var gMinutes
+var gSeconds
 
 function createMat(size) {
     var mat = []
@@ -32,3 +37,24 @@ function getCellPos(strCellId) {
     var pos = { i: +parts[0], j: +parts[1] };
     return pos;
 }
+
+
+function timer() {
+    var elMinutes = document.querySelector('.min')
+    var elSeconds = document.querySelector('.sec')
+
+    startTime = Date.now()
+
+    gGameInterval = setInterval(function () {
+
+        timePass = Date.now() - startTime
+
+        gMinutes = Math.floor(timePass / 1000 / 60) + ''
+        gSeconds = Math.floor(timePass / 1000 - gMinutes * 60)
+
+        elMinutes.innerText = gMinutes
+        elSeconds.innerText = gSeconds
+
+    }, 1000);
+}
+

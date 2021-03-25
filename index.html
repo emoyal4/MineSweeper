@@ -11,10 +11,22 @@
 
 <body onload="initGame()">
 
-    <h1>Minesweeper v1.0</h1>
-
+    <h1>Minesweeper</h1>
     <div class="game-area">
 
+        <div class="img-area">
+            <img onclick="reSet()" hidden class="smiley victory" src="img/victory.png"></img>
+            <img onclick="reSet()" class="smiley play" src="img/play.png"></img>
+            <img onclick="reSet()" hidden class="smiley game-over" src="img/game-over.png"></img>
+        </div>
+
+        <div class="time"><span class="min">0</span> : <span class="sec">0</span> </div>
+
+        <div class="hint-area">
+            <img onclick="getHint(this)" class="hint hint-1" src="img/hint.png">
+            <img onclick="getHint(this)" class="hint hint-2" src="img/hint.png">
+            <img onclick="getHint(this)" class="hint hint-3" src="img/hint.png">
+        </div>
 
         <div onclick="reSet()" class="smiley"> </div>
 
@@ -24,7 +36,10 @@
 
         </div>
 
-        <div class="lives-count">lives: <span></span></div>
+        <div class="info">
+            <div class="lives-count">lives: <span></span></div>
+            <div class="mine-count">Mines Left: <span></span></div>
+        </div>
 
         <div class="btn-area">
             <button id="4" onclick="changeLevel(this)" class="btn beginner "> Beginner </button>
