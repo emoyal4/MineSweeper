@@ -186,7 +186,7 @@ function showCell(elCell) {
         isFirstClick = false
     }
 
-    if (!cell.minesAroundCount) expandShown(gBoard, cellPos)
+    if (!cell.minesAroundCount && !cell.isMine) expandShown(gBoard, cellPos)
     if (!cell.isMine) gGame.shownCount++
     if (cell.isMine) gGame.markedCount++
 
