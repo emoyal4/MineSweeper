@@ -6,6 +6,7 @@ var timePass
 var gMinutes
 var gSeconds
 
+
 function createMat(size) {
     var mat = []
     for (var i = 0; i < size; i++) {

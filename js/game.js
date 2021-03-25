@@ -183,6 +183,8 @@ function showCell(elCell) {
 
     if (!cell.minesAroundCount) expandShown(gBoard, cellPos)
     if (!cell.isMine) gGame.shownCount++
+    if (cell.isMine) gGame.markedCount++
+
 
     cell.isShown = true
 
@@ -221,13 +223,16 @@ function expandShown(board, pos) {
 
         for (var j = pos.j - 1; j <= pos.j + 1; j++) {
             if (j < 0 || j >= board[i].length) continue
+
             if (i === pos.i && j === pos.j) continue
 
             var cell = board[i][j]
 
-            if (!board[i][j].isMine && !board[i][j].isShown) {
+            if (!cell.isMine && !cell.isShown) {
                 cell.isShown = true
                 gGame.shownCount++
+                
+                if (cell.minesAroundCount === 0) expandShown(board, { i: i, j: j })
             }
         }
     }
@@ -239,7 +244,6 @@ function checkGameOver(cell) {
 
     if (cell.isMine && !cell.isMarked) {
         gLevel.lives--
-        gGame.shownCount++
     }
 
     if (gLevel.lives === 0) {
@@ -266,7 +270,7 @@ function checkVictory(board) {
 
     if (!gGame.isOn) return
 
-    if (gGame.shownCount >= (gLevel.SIZE ** 2) - gLevel.MINES) {
+    if (gGame.shownCount + gGame.markedCount === gLevel.SIZE ** 2) {
 
         clearInterval(gGameInterval)
 
