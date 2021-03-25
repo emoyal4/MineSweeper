@@ -6,14 +6,14 @@ var gGame = {
     isOn: false,
     shownCount: 0,
     markedCount: 0,
-    secsPassed: 0
+    safeClicks: 3
 }
 
 var gLevel = {
     SIZE: 4,
     MINES: 2,
     lives: 3
-};
+}
 
 var elPlayImg = document.querySelector('.play')
 var elVictoryImg = document.querySelector('.victory')
@@ -131,7 +131,7 @@ function renderBoard(board) {
             }
 
             className += (cell.isShown || cell.isMarked) ? ` show` : ` hide`
-            cellId = `${i}-${j}`
+            cellId = `cell-${i}-${j}`
             strHTML += `<td id="${cellId}" onmousedown="mouseClick(event , this)" class="${className}"><div>${cellImg}</div></td>`
         }
         strHTML += '</tr>'
@@ -144,8 +144,11 @@ function renderBoard(board) {
     var elLivesCounter = document.querySelector(".lives-count span")
     elLivesCounter.innerText = gLevel.lives
 
-    var elLivesCounter = document.querySelector(".mine-count span")
-    elLivesCounter.innerText = gLevel.MINES - gGame.markedCount
+    var elSafeButtonCounter = document.querySelector(".safe-click span")
+    elSafeButtonCounter.innerText = gGame.safeClicks
+
+    var elMinesCounter = document.querySelector(".mine-count span")
+    elMinesCounter.innerText = gLevel.MINES - gGame.markedCount
 
 }
 
@@ -170,6 +173,8 @@ function showCell(elCell) {
     var cellPos = getCellPos(elCell.id)
     var cell = gBoard[cellPos.i][cellPos.j]
 
+    cell.isShown = true
+
     if (isFirstClick) {
 
         timer()
@@ -186,7 +191,7 @@ function showCell(elCell) {
     if (cell.isMine) gGame.markedCount++
 
 
-    cell.isShown = true
+
 
     renderBoard(gBoard)
     checkGameOver(cell)
@@ -218,6 +223,7 @@ function markCell(elCell) {
 }
 
 function expandShown(board, pos) {
+
     for (var i = pos.i - 1; i <= pos.i + 1; i++) {
         if (i < 0 || i >= board.length) continue
 
@@ -231,7 +237,6 @@ function expandShown(board, pos) {
             if (!cell.isMine && !cell.isShown) {
                 cell.isShown = true
                 gGame.shownCount++
-                
                 if (cell.minesAroundCount === 0) expandShown(board, { i: i, j: j })
             }
         }
@@ -289,6 +294,7 @@ function reSet() {
         shownCount: 0,
         markedCount: 0,
         secsPassed: 0,
+        safeClicks: 3
     }
 
     isFirstClick = true
@@ -364,4 +370,43 @@ function showHint(elCell) {
     renderBoard(gBoard)
 
     isHint = false
+}
+
+function safeClick() {
+
+    var safeCells = []
+
+    if (gGame.safeClicks < 1) return
+
+    for (var i = 0; i < gBoard.length; i++) {
+
+        for (var j = 0; j < gBoard[0].length; j++) {
+
+            if (gBoard[i][j].isMine === false && gBoard[i][j].isShown === false) {
+
+                var cellPos = {i:i,j:j}
+
+                safeCells.push(cellPos)
+            }
+        }
+    }
+
+    var randIdx = getRandomIntInclusive(0,safeCells.length-1)
+
+    var randCellPos = safeCells[randIdx]
+
+    var selector = `cell-${randCellPos.i}-${randCellPos.j}`
+
+    var elCell = document.querySelector(`#${selector}`)
+
+    elCell.classList.add('isSafe')
+
+    gGame.safeClicks--
+
+    setTimeout(function () {
+        elCell.classList.remove('isSafe')
+    }, 1000);
+
+    var elSafeButtonCounter = document.querySelector(".safe-click span")
+    elSafeButtonCounter.innerText = gGame.safeClicks
 }

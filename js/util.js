@@ -19,26 +19,22 @@ function createMat(size) {
     return mat
 }
 
-
 function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-
 function mouseClick(event, elBtn) {
     if (event.button === 0) showCell(elBtn)
     if (event.button === 2) markCell(elBtn)
 }
 
-
 function getCellPos(strCellId) {
     var parts = strCellId.split('-')
-    var pos = { i: +parts[0], j: +parts[1] };
+    var pos = { i: +parts[1], j: +parts[2] };
     return pos;
 }
-
 
 function timer() {
     var elMinutes = document.querySelector('.min')

@@ -6,7 +6,6 @@ body {
 }
 
 h1 {
-    text-align: center;
     font-family: 'Creepster', cursive;
     color: black;
     letter-spacing: 8px;
@@ -50,16 +49,16 @@ h1 {
     height: 100px;
 }
 
+.time{
+    font-family: 'Creepster', cursive;
+}
+
 .hint-area{
     height: 22px;
 }
 
 .hint-area img {
     height: 20px;
-}
-
-.click {
-    filter: invert(80%);
 }
 
 table {
@@ -70,7 +69,6 @@ table {
 
 .cell {
     background-color: #ADAC9A;
-    text-align: center;
     height: 30px;
     width: 30px;
 }
@@ -83,17 +81,16 @@ table {
     opacity: 0%;
 }
 
-.hide {
-    background-color: #838155;
-}
-
-.isMarked {
-    opacity: 100%;
+.info {
+    font-family: 'Creepster', cursive;
+    letter-spacing: 1px;
+    padding: 5px;
+    margin: 0px;
+    color: black;
 }
 
 .btn-area {
     padding: 3px;
-    text-align: center;
     width: fit-content;
     margin: auto;
     border: rgba(255, 255, 255, 0.198) 2px solid;
@@ -113,14 +110,29 @@ button:hover {
     background-color: #ccccc4;
 }
 
-.info {
-    text-align: center;
-    font-family: 'Creepster', cursive;
-    padding: 5px;
-    margin: 0px;
-    color: black;
+.safe-click{
+    padding: 3px;
+    width: fit-content;
+    margin: auto;
+    border: rgba(255, 255, 255, 0.198) 2px solid; 
+    border-top: 0px;
 }
 
-.time{
-    font-family: 'Creepster', cursive;
+
+
+/* util: */
+.click {
+    filter: invert(80%);
+}
+
+.hide {
+    background-color: #838155;
+}
+
+.isMarked {
+    opacity: 100%;
+}
+
+.isSafe{
+    background-color: red;
 }

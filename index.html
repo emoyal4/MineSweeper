@@ -10,12 +10,13 @@
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
-    
+
 </head>
 
 <body onload="initGame()">
 
     <h1>Minesweeper</h1>
+    
     <div class="game-area">
 
         <div class="img-area">
@@ -50,6 +51,8 @@
             <button id="8" onclick="changeLevel(this)" class="btn pro "> Pro </button>
             <button id="12" onclick="changeLevel(this)" class="btn master"> Master </button>
         </div>
+
+        <div class="safe-click"> <button onclick="safeClick()" class="safe-btn">safe clicks:<span> 3 </span></button> </div>
 
     </div>
 
